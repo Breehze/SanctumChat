@@ -1,0 +1,117 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', path='/additional.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', path='/twtest.css') }}">
+    
+    <title></title>
+</head>
+<body>
+    <div class="flex justify-center items-center h-screen bg-gray-700">
+        <div class="flex flex-row rounded-xl bg-gray-800 w-10/12 h-5/6">
+            <div class="flex flex-col  w-1/3 h-full">
+                <div  class="flex items-center mt-4 ml-4">
+                    <button id="pfpimg" class=" hover:opacity-60 p-0 w-24 h-24 bg-inherit border-none bg-[url('https://i.pinimg.com/originals/83/bc/8b/83bc8b88cf6bc4b4e04d153a418cde62.jpg')] bg-cover bg-center rounded-full ">
+                    
+                    </button>
+                    <h4 class="mb-0 ml-5  font-bold text-white text-3xl"  ><span id="ws-id"></span></h4>
+                </div>
+                <div class="flex">   
+                    <button id="myBtn" class="border-2 mt-8 text-cyan-300 ml-5 mr-5 p-4 rounded-md hover:bg-gray-700 border-cyan-300 text-lg font-bold w-1/2 ">
+                        Friend requests
+                    </button>
+                    <button id="logout-button" class="border-2 mt-8 text-red-500 ml-5 mr-5 p-4 rounded-md hover:bg-gray-700 border-red-500 text-lg font-bold w-1/2 ">
+                        Log out
+                    </button>
+                </div>
+                <h4 class="text-white text-3xl font-bold mt-5 ml-5">
+                    Friends :
+                </h4>
+                <div class="overflow-y-scroll h-5/6 ml-5">
+                    <ul id='friends'>
+                    <li>  
+                        <button  class="flex relative items-center mt-5 hover:bg-gray-700 w-full rounded-md">
+                            <div class="w-16 h-16 bg-cover bg-center rounded-full bg-[url('https://i.pinimg.com/originals/83/bc/8b/83bc8b88cf6bc4b4e04d153a418cde62.jpg')]"></div>
+                            <div class="absolute top-0 w-5 h-5 bg-red-600 bg-cover bg-center rounded-full text-white text-xs text-center"></div>
+                            <h6 class="ml-5 text-white font-bold text-lg"></h6>
+                        </button>
+                    </li> 
+                    </ul>
+                </div>
+            </div>
+            <div class="flex flex-col w-2/3 h-full">
+                <div id ="messages_container" class="overflow-y-scroll h-full ml-5 mb-5">
+                    <ul style="list-style: none;" id='messages'>
+                        <div class="invisible flex flex-row mt-5">
+                            <div class="w-12 h-12 bg-[url('https://i.pinimg.com/originals/83/bc/8b/83bc8b88cf6bc4b4e04d153a418cde62.jpg')] bg-cover bg-center rounded-full">
+
+                            </div>
+                            <div class="ml-5">
+                                <h5 class="text-white font-semibold"></h5>
+                                <h5 class="text-gray-300"></h5>
+                            </div>
+                        </div>
+                        <div id = "message_Id" class="flex relative flex-row hover:bg-white/5">
+                            <div class="w-12">
+
+                            </div>
+                            <div class="invisible ml-5">
+                                <h5 class="text-gray-300 border-green-600 border-gray-400"></h5>
+                            </div>
+                            <div id="message-menu-mId"  class="invisible absolute bottom-3 right-4 w-16 bg-gray-700 rounded-md">
+                                <button class="hover:bg-white/20 rounded-l-md"></button>
+                                <button class="hover:bg-white/20" ></button>
+                            </div>
+                        </div>
+            
+                    </ul>    
+                </div>
+                <div class="mx-5"> 
+                    <form action="" id = "msg-form" onsubmit="stop_reload(event)">
+                        <input class="border-2 border-cyan-300 bg-slate-700 p-2 w-full rounded-lg" placeholder="Aa" type="text" id="messageText" autocomplete="off"/>
+                    </form>
+                </div>
+            </div>
+            
+            
+            <div id="myModal" class="invisible fixed inset-0 flex items-center justify-center z-50 bg-black/80">
+                <div class="bg-white rounded-lg shadow-lg p-6 w-3/4 h-1/2">
+                  <!-- Modal content goes here -->
+                  <h2 class="text-xl font-bold mb-4">Modal Title</h2>
+                  <div class="grid">
+                    <div>
+                        <form action="" id="add_friend_form" onsubmit="stop_reload(event)">
+                          <input placeholder="Add friend!" type="text" id="add_friend_input" autocomplete="off"/>
+                      </form>
+                    </div>
+                    <div>
+                        <h3>Friend requests</h3>
+                        <ul id='friendrequests'></ul>
+                    </div>	
+                    </div>
+                    
+                  
+                  
+                  <div class="mt-4 flex justify-end">
+                    <button class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">Close</button>
+                  </div>
+                </div>
+              </div>
+              
+              <div id="upload-pfp" class="invisible fixed inset-0 flex items-center justify-center z-50 bg-black/80">
+
+                <div class="bg-white rounded-lg shadow-lg p-6 w-3/4 h-1/2" id="upload-pfp">	
+                        <form id="upload-pfp-form" enctype="multipart/form-data">
+                            <input type="file" name="file">
+                            <input type="submit" value="Upload">
+                      </form>
+                </div>
+        
+        </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="{{ url_for('static', path='/sockets.js') }}"></script>
+	<script type="text/javascript" src="{{ url_for('static', path='/additional.js') }}"></script>
+</body>
+</html>
