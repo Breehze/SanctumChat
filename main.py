@@ -2,6 +2,8 @@ import bcrypt
 import json
 import asyncio
 import db
+import uuid
+import os
 from datetime import datetime, timedelta
 from fastapi import FastAPI, Request , Depends , Response , HTTPException, status , Request , WebSocket , WebSocketDisconnect
 from fastapi.responses import HTMLResponse , RedirectResponse, FileResponse
@@ -135,12 +137,12 @@ templates = Jinja2Templates(directory="templates")
 
 @app.get("/", response_class=HTMLResponse)
 async def read_item(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
+    return templates.TemplateResponse("index.html", {"request": request})
 
 
 @app.get("/home", response_class = HTMLResponse)
 async def home_page(request: Request):
-    return templates.TemplateResponse("home.html" , {"request":request})
+    return templates.TemplateResponse("index.html" , {"request":request})
 
 
 @app.get("/logout")
@@ -160,6 +162,9 @@ async def get_pfp(user_id : str):
 
     return FileResponse(f"{img_link}",headers = header_response)
 
+@app.get("/chat_attachments/{chat_id}/{file}")
+async def get_chat_attachment(chat_id : str ,file : str):
+    return FileResponse(f"chat_attachments/{chat_id}/{file}")
 
 @app.post('/register/{user_id}')
 async def register(user_id : str , user : User ):
@@ -288,6 +293,8 @@ async def websocket_endpoint(websocket: WebSocket,chat_id : str,user : str = Dep
     query = db.find("chats",chat_id)
     if user not in query["members"]:
         return {"Message" : "Forbidden"}  
+    
+    
     await manager.connect(chat_id,websocket)
     prev_mes = query['messages']
     query['members'].remove(user) 
@@ -296,24 +303,46 @@ async def websocket_endpoint(websocket: WebSocket,chat_id : str,user : str = Dep
     await websocket.send_text(json.dumps(prev_mes))
     try:
         while True:
-            #make it so :?:message_resend_recent:?: resends recent messages
-            data_in = await websocket.receive_text()
-            if len(data_in) > 250: 
-                manager.send_personal_message("Way too much text",websocket)
+            data_in = await websocket.receive()
+            print(data_in)
+            message_type = "text"
+            if 'text' not in data_in : 
+                mime_length = data_in['bytes'][0]
+                mime_type = data_in['bytes'][2:mime_length].decode()
+                file_data = data_in['bytes'][mime_length+1:]
+                if chat_id not in os.listdir('chat_attachments'):
+                    os.mkdir(f"chat_attachments\{chat_id}")                
+                file_path = f"chat_attachments/{chat_id}/{str(uuid.uuid4())}.{mime_type[mime_type.index('/')+1:]}"
+                with open(file_path,'wb') as out:
+                    out.write(file_data)
+                message_type = "file"
+                message_content = file_path
+            else:
+                message_content = data_in['text']
+
+            
+            if len(message_content) > 250 or len(message_content.strip()) == 0: 
                 continue
             print(chat_id)
-            if data_in == ":?:message_resend_recent:?:":
-                await asyncio.sleep(0.1)
+            
+            
+            if message_content == ":?:message_resend_recent:?:":
+                await asyncio.sleep(0.3)
                 query = db.find("chats",chat_id)
                 prev_mes = query['messages']
-                query['members'].remove(user)
+                #query['members'].remove(user)
                 await manager.broadcast(chat_id,json.dumps(prev_mes))
                 continue
 
+            print(manager.active_connections)
             if other_dude not in await manager.get_cur_chat_users(chat_id):
                 db.update("users",other_dude,f"friends.{user}.unseen_messages",db.find("users",other_dude)['friends'][user]['unseen_messages'] + 1) #Remake this into increment and not this mess
             
-            data_formatted = {user : data_in}
+            data_formatted = { user : message_content, 
+                              "message_type" : message_type, 
+                              "timestamp" : int(datetime.timestamp(datetime.now())) 
+                              }
+            
             need_this_to_get_id = list(db.find("chats",chat_id)['messages'].keys())
             if len(need_this_to_get_id) == 0:
                 message_id = 0
@@ -321,7 +350,7 @@ async def websocket_endpoint(websocket: WebSocket,chat_id : str,user : str = Dep
                 message_id = int(need_this_to_get_id[len(need_this_to_get_id) - 1]) + 1
             db.update("chats",chat_id,f"messages.{str(message_id)}",data_formatted)
             await manager.broadcast(chat_id,json.dumps({ message_id :data_formatted}))
-            await asyncio.sleep(2)
+            await asyncio.sleep(0.5)
     except Exception as e:
         print(e) 
         manager.disconnect(chat_id,websocket)
