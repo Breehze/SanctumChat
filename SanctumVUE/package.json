@@ -1,0 +1,21 @@
+{
+  "name": " chat-app-frontend-test-vue",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "tailwind": "tailwindcss --input ./src/css/input.css --output ./src/css/output.css --watch",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "axios": "^1.4.0",
+    "vue": "^3.3.4",
+    "vue-router": "^4.2.4"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.2.3",
+    "tailwindcss": "^3.3.2",
+    "vite": "^4.3.9"
+  }
+}
