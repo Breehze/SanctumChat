@@ -379,10 +379,8 @@ async def websocket_endpoint(websocket: WebSocket,chat_id : str):
 
         traceback_str = traceback.format_exc()
 
-        # Print the traceback
         print(traceback_str)
 
-        # Find the specific line number in the traceback
         line_number = None
         for line in traceback_str.splitlines():
             if "raise Exception" in line:
