@@ -133,6 +133,18 @@
         })
     }
 
+    const logOut = async() => {
+        const response = await fetch("http://127.0.0.1:8000/logout",{
+            method : 'GET',
+            headers : {
+                    'Content-Type' : 'application/json',
+                    'Authorization' : `Bearer ${auth}`
+                }
+        }).then(localStorage.clear()).then(window.location.href = "/")
+        console.log(response)
+        
+    }
+
     
     function evaluateLastAuthor(currentAuthor) {
         if (currentAuthor == lastAuthor){
@@ -173,7 +185,7 @@
                     <button @click="shReqModal = true" class="border-2 mt-8 text-cyan-300 ml-5 mr-5 p-4 rounded-md hover:bg-gray-700 border-cyan-300 text-lg font-bold w-1/2 ">
                         Friend requests
                     </button>
-                    <button class="border-2 mt-8 text-red-500 ml-5 mr-5 p-4 rounded-md hover:bg-gray-700 border-red-500 text-lg font-bold w-1/2 ">
+                    <button @click="logOut" class="border-2 mt-8 text-red-500 ml-5 mr-5 p-4 rounded-md hover:bg-gray-700 border-red-500 text-lg font-bold w-1/2 ">
                         Log out
                     </button>
                 </div>
