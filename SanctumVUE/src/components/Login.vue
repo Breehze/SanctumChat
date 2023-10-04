@@ -7,6 +7,12 @@
     
     
     const submit = async() =>{
+        if(username.value.length == 0 && username.value.length == 0) {
+            alert("You gotta login bitch !")
+            return "a"
+
+        }
+        
         const response = await fetch("http://127.0.0.1:8000/login",{
             method: 'POST',
             headers : {'Content-Type' : 'application/x-www-form-urlencoded'},
