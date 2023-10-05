@@ -236,7 +236,7 @@ async def upload_pfp(file: UploadFile , user : str = Depends(get_current_user) )
         out.write(await file.read())
     await file.close()
     return {"filename": file.filename}
-
+"s"
 
 @app.delete("/deletemessage/{chat_room}/{message_id}")
 async def delete_message(chat_room : str , message_id : str ,user : str = Depends(get_current_user)):
@@ -323,7 +323,7 @@ async def websocket_endpoint(websocket: WebSocket,chat_id : str,user : str = Dep
             
             if len(message_content) > 250 or len(message_content.strip()) == 0: 
                 continue
-            print(chat_id)
+            
             
             
             if message_content == ":?:message_resend_recent:?:":
